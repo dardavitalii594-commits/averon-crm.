@@ -2,9 +2,10 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Averon Tech — CRM</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap');
 
 :root{
   --bg: #0D0D0D;
@@ -59,6 +60,7 @@ body::after{
   z-index:1;
 }
 
+/* SIDEBAR */
 .sidebar{
   background: #0A0A0A;
   border-right: 1px solid var(--line);
@@ -92,7 +94,7 @@ body::after{
   color: var(--grey-dim);
   cursor:pointer;
   position:relative;
-  transition: color .2s ease;
+  transition: color .2s ease, background .2s ease;
 }
 .nav-item svg{ width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.6; }
 .nav-item:hover{ color: var(--white); }
@@ -111,25 +113,15 @@ body::after{
   background: var(--red-bright);
   box-shadow: 0 0 10px var(--red-glow);
 }
-.sidebar-bottom{
-  width:44px; height:44px;
-  border-radius:50%;
-  background: var(--card);
-  border:1px solid var(--card-border);
-  display:flex; align-items:center; justify-content:center;
-  color:var(--grey);
-}
-.sidebar-bottom svg{ width:18px; height:18px; stroke:currentColor; fill:none; stroke-width:1.6; }
 
+/* MAIN CONTENT */
 .main{ padding: 28px 40px 40px; }
 
 .topbar{
   display:flex; align-items:center; justify-content:space-between;
   margin-bottom:32px;
 }
-.title-block h1{
-  font-size:22px; font-weight:700; letter-spacing:-0.01em;
-}
+.title-block h1{ font-size:22px; font-weight:700; letter-spacing:-0.01em; }
 .title-block .eyebrow{
   font-family:'Roboto Mono', monospace;
   font-size:11px;
@@ -172,11 +164,18 @@ body::after{
 .avatar{
   width:38px; height:38px; border-radius:50%;
   background: var(--card);
-  border:1px solid var(--card-border);
+  border:1px solid var(--red);
   display:flex;align-items:center;justify-content:center;
-  font-size:12px; font-weight:600; color:var(--grey);
+  font-size:12px; font-weight:700; color:#fff;
+  box-shadow: 0 0 10px rgba(240,19,19,0.4);
+  cursor:pointer;
 }
 
+/* TAB CONTENT PANELS */
+.tab-content{ display:none; }
+.tab-content.active{ display:block; }
+
+/* KANBAN TAB */
 .stats{
   display:grid;
   grid-template-columns: repeat(4, 1fr);
@@ -188,8 +187,6 @@ body::after{
   border:1px solid var(--line);
   border-radius:14px;
   padding:18px 20px;
-  position:relative;
-  overflow:hidden;
 }
 .stat-card .label{
   font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
@@ -199,9 +196,6 @@ body::after{
 .stat-card .value{ font-size:26px; font-weight:700; }
 .stat-card .delta{ font-size:12px; margin-top:6px; color:var(--grey); }
 .stat-card .delta.up{ color: var(--red-bright); text-shadow:0 0 8px rgba(255,59,48,0.5); }
-.stat-card .spark{
-  position:absolute; right:-10px; bottom:-10px; width:90px; height:50px; opacity:0.5;
-}
 
 .kanban{
   display:grid;
@@ -209,283 +203,357 @@ body::after{
   gap:0;
   border-top:1px solid var(--line);
 }
-.column{
-  padding: 22px 18px;
-  border-right:1px solid var(--line);
-}
+.column{ padding: 22px 18px; border-right:1px solid var(--line); }
 .column:last-child{ border-right:none; }
-.column-head{
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:20px;
-}
+.column-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
 .column-head .col-title{
   display:flex; align-items:center; gap:10px;
-  font-size:13px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase;
-  color: var(--grey);
+  font-size:13px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; color: var(--grey);
 }
 .dot{ width:7px; height:7px; border-radius:50%; }
 .dot.new{ background:#6B6B6B; }
 .dot.progress{ background:#FF3B30; box-shadow:0 0 8px rgba(255,59,48,0.8); }
 .dot.ready{ background:#FF6B60; box-shadow:0 0 10px rgba(255,107,96,0.9); }
 .col-count{
-  font-family:'Roboto Mono', monospace;
-  font-size:11px; color: var(--grey-dim);
-  background: var(--panel);
-  border:1px solid var(--line);
-  border-radius:20px;
-  padding:2px 9px;
+  font-family:'Roboto Mono', monospace; font-size:11px; color: var(--grey-dim);
+  background: var(--panel); border:1px solid var(--line); border-radius:20px; padding:2px 9px;
 }
-
-.progress-track{
-  height:2px; background:var(--line); border-radius:2px; margin-bottom:20px; overflow:hidden;
-}
+.progress-track{ height:2px; background:var(--line); border-radius:2px; margin-bottom:20px; overflow:hidden; }
 .progress-track .fill{ height:100%; background: var(--red); box-shadow:0 0 8px var(--red-glow); }
-
 .cards{ display:flex; flex-direction:column; gap:14px; }
-
 .order-card{
   background: rgba(26,26,26,0.65);
   backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
   border:1px solid var(--card-border);
-  border-radius:14px;
-  padding:16px;
-  cursor:pointer;
+  border-radius:14px; padding:16px; cursor:pointer;
   transition: border-color .2s ease, box-shadow .2s ease, transform .15s ease;
 }
 .order-card:hover{
-  border-color: rgba(240,19,19,0.45);
-  box-shadow: 0 0 22px rgba(240,19,19,0.16);
-  transform: translateY(-2px);
+  border-color: rgba(240,19,19,0.45); box-shadow: 0 0 22px rgba(240,19,19,0.16); transform: translateY(-2px);
 }
-.order-card .row-top{
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:12px;
-}
-.order-id{
-  font-family:'Roboto Mono', monospace;
-  font-size:11px;
-  color: var(--grey-dim);
-  letter-spacing:0.03em;
-}
-.tag{
-  font-size:10px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase;
-  padding:4px 9px; border-radius:20px;
-  font-family:'Roboto Mono', monospace;
-}
+.order-card .row-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+.order-id{ font-family:'Roboto Mono', monospace; font-size:11px; color: var(--grey-dim); }
+.tag{ font-size:10px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; padding:4px 9px; border-radius:20px; font-family:'Roboto Mono', monospace; }
 .tag.new{ color:var(--grey); background:rgba(255,255,255,0.05); border:1px solid var(--card-border); }
-.tag.progress{ color:#fff; background: linear-gradient(180deg,#8f0d0d,#5c0808); border:1px solid rgba(255,59,48,0.4); box-shadow:0 0 10px rgba(240,19,19,0.25); }
-.tag.ready{ color:#fff; background: linear-gradient(180deg,#E01010,#A80D0D); border:1px solid rgba(255,90,80,0.6); box-shadow:0 0 14px rgba(255,59,48,0.55); }
-
+.tag.progress{ color:#fff; background: linear-gradient(180deg,#8f0d0d,#5c0808); border:1px solid rgba(255,59,48,0.4); }
+.tag.ready{ color:#fff; background: linear-gradient(180deg,#E01010,#A80D0D); border:1px solid rgba(255,90,80,0.6); }
 .order-card h3{ font-size:15px; font-weight:600; margin-bottom:4px; }
 .order-card .client{ font-size:12.5px; color: var(--grey); margin-bottom:14px; }
-
-.meta-row{
-  display:flex; align-items:center; justify-content:space-between;
-  border-top:1px solid var(--line);
-  padding-top:12px;
-}
+.meta-row{ display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding-top:12px; }
 .amount{ font-family:'Roboto Mono', monospace; font-size:13px; font-weight:500; color:#fff; }
-.people{ display:flex; align-items:center; }
-.mini-avatar{
-  width:24px; height:24px; border-radius:50%;
-  background: #232323; border:1.5px solid #0D0D0D;
-  display:flex; align-items:center; justify-content:center;
-  font-size:9px; font-weight:600; color:var(--grey);
-  margin-left:-8px;
-}
-.mini-avatar:first-child{ margin-left:0; }
 
-.due{
-  font-size:11px; color: var(--grey-dim); margin-top:10px;
-  display:flex; align-items:center; gap:6px;
+/* DEPARTMENTS TAB */
+.dept-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap:20px; }
+.dept-card{
+  background: var(--panel); border:1px solid var(--card-border); border-radius:16px; padding:24px;
+  position:relative; overflow:hidden;
 }
-.due svg{ width:12px; height:12px; stroke:var(--grey-dim); fill:none; stroke-width:1.6; }
-.due.urgent{ color: var(--red-bright); }
-.due.urgent svg{ stroke:var(--red-bright); }
+.dept-card::before{
+  content:''; position:absolute; top:0; left:0; width:100%; height:3px;
+  background: linear-gradient(90deg, var(--red), transparent);
+}
+.dept-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.dept-title{ font-size:16px; font-weight:700; }
+.dept-badge{ font-family:'Roboto Mono', monospace; font-size:11px; padding:3px 10px; border-radius:20px; background:rgba(240,19,19,0.15); color:var(--red-bright); border:1px solid rgba(240,19,19,0.3); }
+.dept-stats{ display:flex; gap:24px; margin-bottom:20px; font-size:13px; color:var(--grey); }
+.dept-stats strong{ color:#fff; font-family:'Roboto Mono', monospace; }
+.task-list{ display:flex; flex-direction:column; gap:10px; }
+.task-item{
+  background: var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px;
+  display:flex; align-items:center; justify-content:space-between; font-size:13px;
+}
+.task-item .task-name{ font-weight:500; }
+.task-item .task-meta{ font-family:'Roboto Mono', monospace; font-size:11px; color:var(--grey-dim); }
 
-.add-card{
-  border:1px dashed var(--card-border);
-  border-radius:14px;
-  padding:14px;
-  text-align:center;
-  font-size:12px;
-  color: var(--grey-dim);
-  cursor:pointer;
-  transition: border-color .2s ease, color .2s ease;
+/* PROFILE TAB */
+.profile-wrapper{ display:grid; grid-template-columns: 320px 1fr; gap:24px; }
+.profile-card{
+  background: var(--panel); border:1px solid var(--card-border); border-radius:16px; padding:28px;
+  display:flex; flex-direction:column; align-items:center; text-align:center;
 }
-.add-card:hover{ border-color: rgba(240,19,19,0.5); color: var(--red-bright); }
+.avatar-large{
+  width:88px; height:88px; border-radius:50%; background: var(--card); border:2px solid var(--red-bright);
+  display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:800; color:#fff;
+  box-shadow: 0 0 25px rgba(240,19,19,0.4); margin-bottom:18px;
+}
+.profile-name{ font-size:18px; font-weight:700; margin-bottom:4px; }
+.profile-role{ font-family:'Roboto Mono', monospace; font-size:12px; color:var(--red-bright); margin-bottom:20px; text-transform:uppercase; letter-spacing:0.08em; }
+.profile-info-list{ width:100%; text-align:left; display:flex; flex-direction:column; gap:12px; border-top:1px solid var(--line); padding-top:20px; }
+.info-row{ display:flex; justify-content:space-between; font-size:12.5px; }
+.info-row .lbl{ color:var(--grey-dim); }
+.info-row .val{ font-family:'Roboto Mono', monospace; color:#fff; }
+
+.profile-main-content{ display:flex; flex-direction:column; gap:20px; }
+.section-box{ background: var(--panel); border:1px solid var(--card-border); border-radius:16px; padding:24px; }
+.section-box h2{ font-size:15px; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.section-box h2::before{ content:''; width:4px; height:16px; background:var(--red-bright); border-radius:2px; box-shadow:0 0 8px var(--red-glow); }
 </style>
 </head>
 <body>
+
 <div class="app">
 
+  <!-- SIDEBAR NAVIGATION -->
   <aside class="sidebar">
     <div class="logo-mark">AT</div>
     <nav class="nav-icons">
-      <div class="nav-item" title="Dashboard">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
-      </div>
-      <div class="nav-item active" title="Заказы">
+      <div class="nav-item active" onclick="switchTab('kanban', this)" title="Канбан Заказов">
         <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
       </div>
-      <div class="nav-item" title="Клиенты">
+      <div class="nav-item" onclick="switchTab('departments', this)" title="Отделы и Таски">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      </div>
+      <div class="nav-item" onclick="switchTab('profile', this)" title="Личный Профиль">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 21c0-4 3.2-6.5 7-6.5s7 2.5 7 6.5"/></svg>
       </div>
-      <div class="nav-item" title="Аналитика">
-        <svg viewBox="0 0 24 24"><path d="M4 20V10M11 20V4M18 20v-7"/></svg>
-      </div>
-      <div class="nav-item" title="Настройки">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.15-1.45l2-1.56-2-3.46-2.36.95a7 7 0 00-2.5-1.45L13.6 2h-3.2l-.4 2.53a7 7 0 00-2.5 1.45l-2.36-.95-2 3.46 2 1.56A7 7 0 004 12c0 .49.05.97.15 1.45l-2 1.56 2 3.46 2.36-.95c.73.63 1.58 1.13 2.5 1.45L10.4 22h3.2l.4-2.53c.92-.32 1.77-.82 2.5-1.45l2.36.95 2-3.46-2-1.56c.1-.48.15-.96.15-1.45z"/></svg>
-      </div>
     </nav>
-    <div class="sidebar-bottom">
-      <svg viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
-    </div>
   </aside>
 
   <main class="main">
+    
+    <!-- TOPBAR -->
     <div class="topbar">
       <div class="title-block">
         <span class="eyebrow">Averon Tech · Control Deck</span>
-        <h1>Заказы</h1>
+        <h1 id="page-title">Заказы</h1>
       </div>
       <div class="top-actions">
         <div class="search">
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          Поиск заказа...
+          Поиск...
         </div>
         <button class="btn-primary">+ Новый заказ</button>
-        <div class="avatar">ЕК</div>
+        <div class="avatar" onclick="switchTab('profile', document.querySelectorAll('.nav-item')[2])">ВД</div>
       </div>
     </div>
 
-    <div class="stats">
-      <div class="stat-card">
-        <div class="label">Активные заказы</div>
-        <div class="value">128</div>
-        <div class="delta up">▲ 12% за неделю</div>
+    <!-- TAB 1: KANBAN -->
+    <div id="tab-kanban" class="tab-content active">
+      <div class="stats">
+        <div class="stat-card">
+          <div class="label">Активные заказы</div>
+          <div class="value">128</div>
+          <div class="delta up">▲ 12% за неделю</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">В работе</div>
+          <div class="value">46</div>
+          <div class="delta">стабильно</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Готово сегодня</div>
+          <div class="value">19</div>
+          <div class="delta up">▲ 4 к плану</div>
+        </div>
+        <div class="stat-card">
+          <div class="label">Выручка, мес.</div>
+          <div class="value">4.82М ₽</div>
+          <div class="delta up">▲ 8.3%</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="label">В работе</div>
-        <div class="value">46</div>
-        <div class="delta">стабильно</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Готово сегодня</div>
-        <div class="value">19</div>
-        <div class="delta up">▲ 4 к плану</div>
-      </div>
-      <div class="stat-card">
-        <div class="label">Выручка, мес.</div>
-        <div class="value">4.82М ₽</div>
-        <div class="delta up">▲ 8.3%</div>
+
+      <div class="kanban">
+        <div class="column">
+          <div class="column-head">
+            <div class="col-title"><span class="dot new"></span>Новый</div>
+            <div class="col-count">08</div>
+          </div>
+          <div class="progress-track"><div class="fill" style="width:15%"></div></div>
+          <div class="cards">
+            <div class="order-card">
+              <div class="row-top"><span class="order-id">#AV-2214</span><span class="tag new">Новый</span></div>
+              <h3>Монтаж серверной стойки</h3>
+              <div class="client">ООО «Нордвинд Логистика»</div>
+              <div class="meta-row"><span class="amount">₽ 186 000</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="column-head">
+            <div class="col-title"><span class="dot progress"></span>В работе</div>
+            <div class="col-count">05</div>
+          </div>
+          <div class="progress-track"><div class="fill" style="width:55%"></div></div>
+          <div class="cards">
+            <div class="order-card">
+              <div class="row-top"><span class="order-id">#AV-2201</span><span class="tag progress">В работе</span></div>
+              <h3>Замена платы & пайка BGA</h3>
+              <div class="client">Сервисный отдел №1</div>
+              <div class="meta-row"><span class="amount">₽ 45 000</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="column">
+          <div class="column-head">
+            <div class="col-title"><span class="dot ready"></span>Ready</div>
+            <div class="col-count">03</div>
+          </div>
+          <div class="progress-track"><div class="fill" style="width:100%"></div></div>
+          <div class="cards">
+            <div class="order-card">
+              <div class="row-top"><span class="order-id">#AV-2183</span><span class="tag ready">Ready</span></div>
+              <h3>Пусконаладка ЦОД, зал 2</h3>
+              <div class="client">Averon Data Center</div>
+              <div class="meta-row"><span class="amount">₽ 540 000</span></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="kanban">
-
-      <div class="column">
-        <div class="column-head">
-          <div class="col-title"><span class="dot new"></span>Новый</div>
-          <div class="col-count">08</div>
+    <!-- TAB 2: DEPARTMENTS -->
+    <div id="tab-departments" class="tab-content">
+      <div class="dept-grid">
+        <div class="dept-card">
+          <div class="dept-header">
+            <div class="dept-title">01. Отдел Пайки & СМД</div>
+            <span class="dept-badge">Нагрузка: 88%</span>
+          </div>
+          <div class="dept-stats">
+            <div>Задач: <strong>14</strong></div>
+            <div>Инженеров: <strong>4</strong></div>
+            <div>Ср. время: <strong>2.5ч</strong></div>
+          </div>
+          <div class="task-list">
+            <div class="task-item">
+              <span class="task-name">Пайка BGA проц. i9 (MacBook Air)</span>
+              <span class="task-meta">#AV-2201 · Срочно</span>
+            </div>
+            <div class="task-item">
+              <span class="task-name">Восстановление цепи питания контроллера</span>
+              <span class="task-meta">#AV-2195 · В процессе</span>
+            </div>
+          </div>
         </div>
-        <div class="progress-track"><div class="fill" style="width:15%"></div></div>
-        <div class="cards">
-          <div class="order-card">
-            <div class="row-top"><span class="order-id">#AV-2214</span><span class="tag new">Новый</span></div>
-            <h3>Монтаж серверной стойки</h3>
-            <div class="client">ООО «Нордвинд Логистика»</div>
-            <div class="meta-row">
-              <span class="amount">₽ 186 000</span>
-              <div class="people"><div class="mini-avatar">ДМ</div></div>
-            </div>
-            <div class="due"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Срок: 14 авг</div>
-          </div>
 
-          <div class="order-card">
-            <div class="row-top"><span class="order-id">#AV-2215</span><span class="tag new">Новый</span></div>
-            <h3>Диагностика сети филиала</h3>
-            <div class="client">Ковальски и партнёры</div>
-            <div class="meta-row">
-              <span class="amount">₽ 74 500</span>
-              <div class="people"><div class="mini-avatar">СП</div><div class="mini-avatar">ИР</div></div>
-            </div>
-            <div class="due"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Срок: 16 авг</div>
+        <div class="dept-card">
+          <div class="dept-header">
+            <div class="dept-title">02. Сборка & Механика</div>
+            <span class="dept-badge">Нагрузка: 45%</span>
           </div>
-
-          <div class="add-card">+ Добавить заказ</div>
+          <div class="dept-stats">
+            <div>Задач: <strong>6</strong></div>
+            <div>Инженеров: <strong>3</strong></div>
+            <div>Ср. время: <strong>1.0ч</strong></div>
+          </div>
+          <div class="task-list">
+            <div class="task-item">
+              <span class="task-name">Установка корпуса стойки ЦОД</span>
+              <span class="task-meta">#AV-2214 · Ожидание</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div class="column">
-        <div class="column-head">
-          <div class="col-title"><span class="dot progress"></span>В работе</div>
-          <div class="col-count">05</div>
+        <div class="dept-card">
+          <div class="dept-header">
+            <div class="dept-title">03. Диагностика & Софт</div>
+            <span class="dept-badge">Нагрузка: 60%</span>
+          </div>
+          <div class="dept-stats">
+            <div>Задач: <strong>9</strong></div>
+            <div>Инженеров: <strong>2</strong></div>
+            <div>Ср. время: <strong>0.8ч</strong></div>
+          </div>
+          <div class="task-list">
+            <div class="task-item">
+              <span class="task-name">Прошивка контроллера полёта / тест</span>
+              <span class="task-meta">#AV-2180 · В процессе</span>
+            </div>
+          </div>
         </div>
-        <div class="progress-track"><div class="fill" style="width:55%"></div></div>
-        <div class="cards">
-          <div class="order-card">
-            <div class="row-top"><span class="order-id">#AV-2201</span><span class="tag progress">В работе</span></div>
-            <h3>Установка СКУД, блок Б</h3>
-            <div class="client">Бизнес-центр «Меридиан»</div>
-            <div class="meta-row">
-              <span class="amount">₽ 312 000</span>
-              <div class="people"><div class="mini-avatar">АК</div><div class="mini-avatar">ВТ</div><div class="mini-avatar">+2</div></div>
-            </div>
-            <div class="due urgent"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Срок: завтра</div>
+
+        <div class="dept-card">
+          <div class="dept-header">
+            <div class="dept-title">04. Отдел Контроля Качества (ОТК)</div>
+            <span class="dept-badge">Нагрузка: 30%</span>
           </div>
-
-          <div class="order-card">
-            <div class="row-top"><span class="order-id">#AV-2198</span><span class="tag progress">В работе</span></div>
-            <h3>Настройка резервных каналов</h3>
-            <div class="client">АО «Гелиос Пром»</div>
-            <div class="meta-row">
-              <span class="amount">₽ 128 900</span>
-              <div class="people"><div class="mini-avatar">НС</div></div>
-            </div>
-            <div class="due"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>Срок: 18 авг</div>
+          <div class="dept-stats">
+            <div>Задач: <strong>3</strong></div>
+            <div>Инженеров: <strong>2</strong></div>
+            <div>Ср. время: <strong>0.5ч</strong></div>
           </div>
-
-          <div class="add-card">+ Добавить заказ</div>
-        </div>
-      </div>
-
-      <div class="column">
-        <div class="column-head">
-          <div class="col-title"><span class="dot ready"></span>Ready</div>
-          <div class="col-count">03</div>
-        </div>
-        <div class="progress-track"><div class="fill" style="width:100%"></div></div>
-        <div class="cards">
-          <div class="order-card">
-            <div class="row-top"><span class="order-id">#AV-2183</span><span class="tag ready">Ready</span></div>
-            <h3>Пусконаладка ЦОД, зал 2</h3>
-            <div class="client">Averon Data Center</div>
-            <div class="meta-row">
-              <span class="amount">₽ 540 000</span>
-              <div class="people"><div class="mini-avatar">РБ</div><div class="mini-avatar">ЕК</div></div>
+          <div class="task-list">
+            <div class="task-item">
+              <span class="task-name">Финальное тестирование нагрузкой</span>
+              <span class="task-meta">#AV-2183 · Ready</span>
             </div>
-            <div class="due">Сдан 09 авг</div>
           </div>
-
-          <div class="order-card">
-            <div class="row-top"><span class="order-id">#AV-2179</span><span class="tag ready">Ready</span></div>
-            <h3>Замена оптики, магистраль 4</h3>
-            <div class="client">ГК «Транском»</div>
-            <div class="meta-row">
-              <span class="amount">₽ 96 300</span>
-              <div class="people"><div class="mini-avatar">ДМ</div></div>
-            </div>
-            <div class="due">Сдан 08 авг</div>
-          </div>
-
-          <div class="add-card">+ Добавить заказ</div>
         </div>
       </div>
-
     </div>
+
+    <!-- TAB 3: PROFILE -->
+    <div id="tab-profile" class="tab-content">
+      <div class="profile-wrapper">
+        <div class="profile-card">
+          <div class="avatar-large">ВД</div>
+          <div class="profile-name">Виталий Дарда</div>
+          <div class="profile-role">Senior Hardware Tech / Lead</div>
+          
+          <div class="profile-info-list">
+            <div class="info-row"><span class="lbl">ID сотрудника:</span><span class="val">#TECH-009</span></div>
+            <div class="info-row"><span class="lbl">Отдел:</span><span class="val">Пайка & Электроника</span></div>
+            <div class="info-row"><span class="lbl">Смена:</span><span class="val">09:00 - 18:00</span></div>
+            <div class="info-row"><span class="lbl">Доступ:</span><span class="val" style="color:var(--red-bright)">Level 3 (Admin)</span></div>
+          </div>
+        </div>
+
+        <div class="profile-main-content">
+          <div class="section-box">
+            <h2>Текущие задачи в работе</h2>
+            <div class="task-list">
+              <div class="task-item">
+                <div>
+                  <div class="task-name">Восстановление цепи питания платы (BGA)</div>
+                  <div style="font-size:11px; color:var(--grey-dim)">Заказ #AV-2201 · Высокий приоритет</div>
+                </div>
+                <span class="tag progress">В работе</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-box">
+            <h2>Показатели за текущий месяц (KPI)</h2>
+            <div class="stats" style="grid-template-columns: repeat(3, 1fr); margin-bottom:0;">
+              <div class="stat-card">
+                <div class="label">Завершено сборок</div>
+                <div class="value">42</div>
+              </div>
+              <div class="stat-card">
+                <div class="label">Качество / Без брака</div>
+                <div class="value" style="color:var(--red-bright)">99.2%</div>
+              </div>
+              <div class="stat-card">
+                <div class="label">Часов на смене</div>
+                <div class="value">164ч</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 </div>
+
+<script>
+function switchTab(tabName, el) {
+  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+  
+  document.getElementById('tab-' + tabName).classList.add('active');
+  if(el) el.classList.add('active');
+
+  const titles = {
+    'kanban': 'Заказы',
+    'departments': 'Разбивка по отделам',
+    'profile': 'Личный профиль'
+  };
+  document.getElementById('page-title').innerText = titles[tabName] || 'Averon CRM';
+}
+</script>
+
 </body>
 </html>
