@@ -1,559 +1,434 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Averon Tech — CRM</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600&display=swap');
+"use client";
 
-:root{
-  --bg: #0D0D0D;
-  --panel: #141414;
-  --card: #1A1A1A;
-  --card-border: #2A2A2A;
-  --line: #232323;
-  --white: #FFFFFF;
-  --grey: #A0A0A0;
-  --grey-dim: #6B6B6B;
-  --red: #F01313;
-  --red-bright: #FF3B30;
-  --red-dim: #3A0B0B;
-  --red-glow: rgba(240,19,19,0.55);
-}
+import React, { useState } from "react";
+import { 
+  Kanban, 
+  LayoutGrid, 
+  User, 
+  Search, 
+  Plus, 
+  Clock, 
+  TrendingUp, 
+  ShieldCheck, 
+  Cpu, 
+  Wrench, 
+  CheckCircle2, 
+  AlertCircle 
+} from "lucide-react";
 
-*{box-sizing:border-box; margin:0; padding:0;}
+// shadcn/ui component primitives
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
-body{
-  background: var(--bg);
-  font-family:'Inter', sans-serif;
-  color: var(--white);
-  min-height:100vh;
-  position:relative;
-  overflow-x:hidden;
-}
+// Mock Data Structure
+const INITIAL_ORDERS = [
+  { id: "AV-2214", title: "Server Rack Mounting & Wiring", client: "Nordwind Logistics", amount: "€ 2,450", status: "new", due: "Aug 14", tech: "DM" },
+  { id: "AV-2215", title: "Branch Network Diagnostics", client: "Kowalski & Partners", amount: "€ 890", status: "new", due: "Aug 16", tech: "IR" },
+  { id: "AV-2201", title: "BGA Reballing & Power Circuit Repair", client: "Internal Lab #1", amount: "€ 550", status: "progress", due: "Urgent", tech: "VD" },
+  { id: "AV-2198", title: "Backup Optical Channel Setup", client: "Helios Prom Corp", amount: "€ 1,320", status: "progress", due: "Aug 18", tech: "NS" },
+  { id: "AV-2183", title: "Data Center Hall 2 Commissioning", client: "Averon Infrastructure", amount: "€ 6,800", status: "ready", due: "Completed", tech: "EK" },
+];
 
-body::before{
-  content:'';
-  position:fixed;
-  top:-200px; left:-150px;
-  width:600px; height:600px;
-  background: radial-gradient(circle, rgba(240,19,19,0.10) 0%, rgba(240,19,19,0) 70%);
-  pointer-events:none;
-  z-index:0;
-}
-body::after{
-  content:'';
-  position:fixed;
-  bottom:-250px; right:-150px;
-  width:700px; height:700px;
-  background: radial-gradient(circle, rgba(240,19,19,0.07) 0%, rgba(240,19,19,0) 70%);
-  pointer-events:none;
-  z-index:0;
-}
+const DEPARTMENTS = [
+  {
+    id: "soldering",
+    name: "01. SMD Soldering & Circuitry",
+    icon: Cpu,
+    load: 88,
+    techs: 4,
+    avgTime: "2.5h",
+    tasks: [
+      { id: "AV-2201", name: "BGA Soldering i9 CPU (MacBook Air)", priority: "Urgent" },
+      { id: "AV-2195", name: "Power Controller Rail Repair", priority: "In Progress" },
+    ]
+  },
+  {
+    id: "assembly",
+    name: "02. Mechanical & Frame Assembly",
+    icon: Wrench,
+    load: 45,
+    techs: 3,
+    avgTime: "1.0h",
+    tasks: [
+      { id: "AV-2214", name: "Server Chassis Installation", priority: "Queued" },
+    ]
+  },
+  {
+    id: "software",
+    name: "03. Diagnostics & Firmware",
+    icon: LayoutGrid,
+    load: 60,
+    techs: 2,
+    avgTime: "0.8h",
+    tasks: [
+      { id: "AV-2180", name: "Flight Controller Calibration & Flash", priority: "In Progress" },
+    ]
+  },
+  {
+    id: "qc",
+    name: "04. Quality Assurance (QA/QC)",
+    icon: ShieldCheck,
+    load: 30,
+    techs: 2,
+    avgTime: "0.5h",
+    tasks: [
+      { id: "AV-2183", name: "Full Thermal Stress Testing", priority: "Ready" },
+    ]
+  }
+];
 
-.app{
-  display:grid;
-  grid-template-columns: 84px 1fr;
-  min-height:100vh;
-  position:relative;
-  z-index:1;
-}
+export default function AveronControlDeck() {
+  const [activeTab, setActiveTab] = useState("kanban");
+  const [searchQuery, setSearchQuery] = useState("");
 
-/* SIDEBAR */
-.sidebar{
-  background: #0A0A0A;
-  border-right: 1px solid var(--line);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  padding: 24px 0;
-}
-.logo-mark{
-  width:36px; height:36px;
-  border:1.5px solid var(--red);
-  border-radius:8px;
-  display:flex; align-items:center; justify-content:center;
-  font-family:'Roboto Mono', monospace;
-  font-weight:700;
-  font-size:15px;
-  color:var(--red-bright);
-  box-shadow: 0 0 14px rgba(240,19,19,0.45), inset 0 0 8px rgba(240,19,19,0.15);
-  margin-bottom:44px;
-}
-.nav-icons{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-  flex:1;
-}
-.nav-item{
-  width:48px; height:48px;
-  border-radius:12px;
-  display:flex; align-items:center; justify-content:center;
-  color: var(--grey-dim);
-  cursor:pointer;
-  position:relative;
-  transition: color .2s ease, background .2s ease;
-}
-.nav-item svg{ width:20px; height:20px; stroke:currentColor; fill:none; stroke-width:1.6; }
-.nav-item:hover{ color: var(--white); }
-.nav-item.active{
-  color:#fff;
-  background: linear-gradient(180deg, rgba(240,19,19,0.16), rgba(240,19,19,0.04));
-  box-shadow: 0 0 0 1px rgba(240,19,19,0.35), 0 0 18px rgba(240,19,19,0.35);
-}
-.nav-item.active svg{ stroke: var(--red-bright); filter: drop-shadow(0 0 5px rgba(255,59,48,0.8)); }
-.nav-item.active::before{
-  content:'';
-  position:absolute;
-  left:-13px;
-  width:3px; height:20px;
-  border-radius:2px;
-  background: var(--red-bright);
-  box-shadow: 0 0 10px var(--red-glow);
-}
+  return (
+    <div className="relative min-h-screen bg-[#0D0D0D] text-white font-sans antialiased selection:bg-[#F01313] selection:text-white overflow-x-hidden">
+      
+      {/* Background Radial Glow Effects (Averon High-Tech Aesthetic) */}
+      <div className="fixed -top-[200px] -left-[150px] w-[600px] h-[600px] bg-radial from-[#F01313]/10 to-transparent pointer-events-none z-0" />
+      <div className="fixed -bottom-[250px] -right-[150px] w-[700px] h-[700px] bg-radial from-[#F01313]/5 to-transparent pointer-events-none z-0" />
 
-/* MAIN CONTENT */
-.main{ padding: 28px 40px 40px; }
-
-.topbar{
-  display:flex; align-items:center; justify-content:space-between;
-  margin-bottom:32px;
-}
-.title-block h1{ font-size:22px; font-weight:700; letter-spacing:-0.01em; }
-.title-block .eyebrow{
-  font-family:'Roboto Mono', monospace;
-  font-size:11px;
-  letter-spacing:0.16em;
-  text-transform:uppercase;
-  color: var(--red-bright);
-  margin-bottom:6px;
-  display:block;
-  text-shadow: 0 0 10px rgba(255,59,48,0.5);
-}
-.top-actions{ display:flex; align-items:center; gap:14px; }
-.search{
-  display:flex; align-items:center; gap:8px;
-  background: var(--panel);
-  border:1px solid var(--line);
-  border-radius:10px;
-  padding:9px 14px;
-  color:var(--grey-dim);
-  font-size:13px;
-  width:230px;
-}
-.search svg{ width:15px; height:15px; stroke:var(--grey-dim); fill:none; stroke-width:1.6; }
-.btn-primary{
-  font-family:'Inter';
-  font-weight:600;
-  font-size:13px;
-  color:#fff;
-  background: linear-gradient(180deg, #E01010, #B50D0D);
-  border:1px solid rgba(255,90,80,0.5);
-  border-radius:10px;
-  padding:10px 18px;
-  cursor:pointer;
-  box-shadow: 0 0 0 1px rgba(240,19,19,0.15), 0 6px 20px rgba(240,19,19,0.30);
-  transition: box-shadow .2s ease, transform .15s ease;
-}
-.btn-primary:hover{
-  box-shadow: 0 0 0 1px rgba(255,59,48,0.5), 0 0 26px rgba(255,59,48,0.65);
-  transform: translateY(-1px);
-}
-.avatar{
-  width:38px; height:38px; border-radius:50%;
-  background: var(--card);
-  border:1px solid var(--red);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px; font-weight:700; color:#fff;
-  box-shadow: 0 0 10px rgba(240,19,19,0.4);
-  cursor:pointer;
-}
-
-/* TAB CONTENT PANELS */
-.tab-content{ display:none; }
-.tab-content.active{ display:block; }
-
-/* KANBAN TAB */
-.stats{
-  display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap:16px;
-  margin-bottom:34px;
-}
-.stat-card{
-  background: var(--panel);
-  border:1px solid var(--line);
-  border-radius:14px;
-  padding:18px 20px;
-}
-.stat-card .label{
-  font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
-  color:var(--grey-dim); margin-bottom:10px;
-  font-family:'Roboto Mono', monospace;
-}
-.stat-card .value{ font-size:26px; font-weight:700; }
-.stat-card .delta{ font-size:12px; margin-top:6px; color:var(--grey); }
-.stat-card .delta.up{ color: var(--red-bright); text-shadow:0 0 8px rgba(255,59,48,0.5); }
-
-.kanban{
-  display:grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap:0;
-  border-top:1px solid var(--line);
-}
-.column{ padding: 22px 18px; border-right:1px solid var(--line); }
-.column:last-child{ border-right:none; }
-.column-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:20px; }
-.column-head .col-title{
-  display:flex; align-items:center; gap:10px;
-  font-size:13px; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; color: var(--grey);
-}
-.dot{ width:7px; height:7px; border-radius:50%; }
-.dot.new{ background:#6B6B6B; }
-.dot.progress{ background:#FF3B30; box-shadow:0 0 8px rgba(255,59,48,0.8); }
-.dot.ready{ background:#FF6B60; box-shadow:0 0 10px rgba(255,107,96,0.9); }
-.col-count{
-  font-family:'Roboto Mono', monospace; font-size:11px; color: var(--grey-dim);
-  background: var(--panel); border:1px solid var(--line); border-radius:20px; padding:2px 9px;
-}
-.progress-track{ height:2px; background:var(--line); border-radius:2px; margin-bottom:20px; overflow:hidden; }
-.progress-track .fill{ height:100%; background: var(--red); box-shadow:0 0 8px var(--red-glow); }
-.cards{ display:flex; flex-direction:column; gap:14px; }
-.order-card{
-  background: rgba(26,26,26,0.65);
-  backdrop-filter: blur(14px);
-  border:1px solid var(--card-border);
-  border-radius:14px; padding:16px; cursor:pointer;
-  transition: border-color .2s ease, box-shadow .2s ease, transform .15s ease;
-}
-.order-card:hover{
-  border-color: rgba(240,19,19,0.45); box-shadow: 0 0 22px rgba(240,19,19,0.16); transform: translateY(-2px);
-}
-.order-card .row-top{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-.order-id{ font-family:'Roboto Mono', monospace; font-size:11px; color: var(--grey-dim); }
-.tag{ font-size:10px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase; padding:4px 9px; border-radius:20px; font-family:'Roboto Mono', monospace; }
-.tag.new{ color:var(--grey); background:rgba(255,255,255,0.05); border:1px solid var(--card-border); }
-.tag.progress{ color:#fff; background: linear-gradient(180deg,#8f0d0d,#5c0808); border:1px solid rgba(255,59,48,0.4); }
-.tag.ready{ color:#fff; background: linear-gradient(180deg,#E01010,#A80D0D); border:1px solid rgba(255,90,80,0.6); }
-.order-card h3{ font-size:15px; font-weight:600; margin-bottom:4px; }
-.order-card .client{ font-size:12.5px; color: var(--grey); margin-bottom:14px; }
-.meta-row{ display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding-top:12px; }
-.amount{ font-family:'Roboto Mono', monospace; font-size:13px; font-weight:500; color:#fff; }
-
-/* DEPARTMENTS TAB */
-.dept-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap:20px; }
-.dept-card{
-  background: var(--panel); border:1px solid var(--card-border); border-radius:16px; padding:24px;
-  position:relative; overflow:hidden;
-}
-.dept-card::before{
-  content:''; position:absolute; top:0; left:0; width:100%; height:3px;
-  background: linear-gradient(90deg, var(--red), transparent);
-}
-.dept-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
-.dept-title{ font-size:16px; font-weight:700; }
-.dept-badge{ font-family:'Roboto Mono', monospace; font-size:11px; padding:3px 10px; border-radius:20px; background:rgba(240,19,19,0.15); color:var(--red-bright); border:1px solid rgba(240,19,19,0.3); }
-.dept-stats{ display:flex; gap:24px; margin-bottom:20px; font-size:13px; color:var(--grey); }
-.dept-stats strong{ color:#fff; font-family:'Roboto Mono', monospace; }
-.task-list{ display:flex; flex-direction:column; gap:10px; }
-.task-item{
-  background: var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px;
-  display:flex; align-items:center; justify-content:space-between; font-size:13px;
-}
-.task-item .task-name{ font-weight:500; }
-.task-item .task-meta{ font-family:'Roboto Mono', monospace; font-size:11px; color:var(--grey-dim); }
-
-/* PROFILE TAB */
-.profile-wrapper{ display:grid; grid-template-columns: 320px 1fr; gap:24px; }
-.profile-card{
-  background: var(--panel); border:1px solid var(--card-border); border-radius:16px; padding:28px;
-  display:flex; flex-direction:column; align-items:center; text-align:center;
-}
-.avatar-large{
-  width:88px; height:88px; border-radius:50%; background: var(--card); border:2px solid var(--red-bright);
-  display:flex; align-items:center; justify-content:center; font-size:28px; font-weight:800; color:#fff;
-  box-shadow: 0 0 25px rgba(240,19,19,0.4); margin-bottom:18px;
-}
-.profile-name{ font-size:18px; font-weight:700; margin-bottom:4px; }
-.profile-role{ font-family:'Roboto Mono', monospace; font-size:12px; color:var(--red-bright); margin-bottom:20px; text-transform:uppercase; letter-spacing:0.08em; }
-.profile-info-list{ width:100%; text-align:left; display:flex; flex-direction:column; gap:12px; border-top:1px solid var(--line); padding-top:20px; }
-.info-row{ display:flex; justify-content:space-between; font-size:12.5px; }
-.info-row .lbl{ color:var(--grey-dim); }
-.info-row .val{ font-family:'Roboto Mono', monospace; color:#fff; }
-
-.profile-main-content{ display:flex; flex-direction:column; gap:20px; }
-.section-box{ background: var(--panel); border:1px solid var(--card-border); border-radius:16px; padding:24px; }
-.section-box h2{ font-size:15px; font-weight:700; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
-.section-box h2::before{ content:''; width:4px; height:16px; background:var(--red-bright); border-radius:2px; box-shadow:0 0 8px var(--red-glow); }
-</style>
-</head>
-<body>
-
-<div class="app">
-
-  <!-- SIDEBAR NAVIGATION -->
-  <aside class="sidebar">
-    <div class="logo-mark">AT</div>
-    <nav class="nav-icons">
-      <div class="nav-item active" onclick="switchTab('kanban', this)" title="Канбан Заказов">
-        <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
-      </div>
-      <div class="nav-item" onclick="switchTab('departments', this)" title="Отделы и Таски">
-        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
-      </div>
-      <div class="nav-item" onclick="switchTab('profile', this)" title="Личный Профиль">
-        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 21c0-4 3.2-6.5 7-6.5s7 2.5 7 6.5"/></svg>
-      </div>
-    </nav>
-  </aside>
-
-  <main class="main">
-    
-    <!-- TOPBAR -->
-    <div class="topbar">
-      <div class="title-block">
-        <span class="eyebrow">Averon Tech · Control Deck</span>
-        <h1 id="page-title">Заказы</h1>
-      </div>
-      <div class="top-actions">
-        <div class="search">
-          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-          Поиск...
-        </div>
-        <button class="btn-primary">+ Новый заказ</button>
-        <div class="avatar" onclick="switchTab('profile', document.querySelectorAll('.nav-item')[2])">ВД</div>
-      </div>
-    </div>
-
-    <!-- TAB 1: KANBAN -->
-    <div id="tab-kanban" class="tab-content active">
-      <div class="stats">
-        <div class="stat-card">
-          <div class="label">Активные заказы</div>
-          <div class="value">128</div>
-          <div class="delta up">▲ 12% за неделю</div>
-        </div>
-        <div class="stat-card">
-          <div class="label">В работе</div>
-          <div class="value">46</div>
-          <div class="delta">стабильно</div>
-        </div>
-        <div class="stat-card">
-          <div class="label">Готово сегодня</div>
-          <div class="value">19</div>
-          <div class="delta up">▲ 4 к плану</div>
-        </div>
-        <div class="stat-card">
-          <div class="label">Выручка, мес.</div>
-          <div class="value">4.82М ₽</div>
-          <div class="delta up">▲ 8.3%</div>
-        </div>
-      </div>
-
-      <div class="kanban">
-        <div class="column">
-          <div class="column-head">
-            <div class="col-title"><span class="dot new"></span>Новый</div>
-            <div class="col-count">08</div>
+      <div className="relative z-10 grid min-h-screen grid-cols-[84px_1fr]">
+        
+        {/* SIDEBAR NAVIGATION */}
+        <aside className="flex flex-col items-center py-6 bg-[#0A0A0A] border-r border-[#232323]">
+          {/* Logo Mark */}
+          <div className="flex items-center justify-center w-10 h-10 mb-10 text-sm font-bold tracking-wider rounded-lg font-mono text-[#FF3B30] border border-[#F01313] bg-[#0A0A0A] shadow-[0_0_14px_rgba(240,19,19,0.45)]">
+            AT
           </div>
-          <div class="progress-track"><div class="fill" style="width:15%"></div></div>
-          <div class="cards">
-            <div class="order-card">
-              <div class="row-top"><span class="order-id">#AV-2214</span><span class="tag new">Новый</span></div>
-              <h3>Монтаж серверной стойки</h3>
-              <div class="client">ООО «Нордвинд Логистика»</div>
-              <div class="meta-row"><span class="amount">₽ 186 000</span></div>
-            </div>
-          </div>
-        </div>
 
-        <div class="column">
-          <div class="column-head">
-            <div class="col-title"><span class="dot progress"></span>В работе</div>
-            <div class="col-count">05</div>
-          </div>
-          <div class="progress-track"><div class="fill" style="width:55%"></div></div>
-          <div class="cards">
-            <div class="order-card">
-              <div class="row-top"><span class="order-id">#AV-2201</span><span class="tag progress">В работе</span></div>
-              <h3>Замена платы & пайка BGA</h3>
-              <div class="client">Сервисный отдел №1</div>
-              <div class="meta-row"><span class="amount">₽ 45 000</span></div>
-            </div>
-          </div>
-        </div>
+          {/* Navigation Controls */}
+          <div className="flex flex-col gap-3 flex-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setActiveTab("kanban")}
+              className={`w-12 h-12 rounded-xl transition-all duration-200 ${
+                activeTab === "kanban"
+                  ? "bg-gradient-to-b from-[#F01313]/20 to-[#F01313]/5 text-white border border-[#F01313]/40 shadow-[0_0_18px_rgba(240,19,19,0.35)] relative before:absolute before:-left-3 before:w-1 before:h-5 before:bg-[#FF3B30] before:rounded-r before:shadow-[0_0_10px_#F01313]"
+                  : "text-[#6B6B6B] hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <Kanban className="w-5 h-5" />
+            </Button>
 
-        <div class="column">
-          <div class="column-head">
-            <div class="col-title"><span class="dot ready"></span>Ready</div>
-            <div class="col-count">03</div>
-          </div>
-          <div class="progress-track"><div class="fill" style="width:100%"></div></div>
-          <div class="cards">
-            <div class="order-card">
-              <div class="row-top"><span class="order-id">#AV-2183</span><span class="tag ready">Ready</span></div>
-              <h3>Пусконаладка ЦОД, зал 2</h3>
-              <div class="client">Averon Data Center</div>
-              <div class="meta-row"><span class="amount">₽ 540 000</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setActiveTab("departments")}
+              className={`w-12 h-12 rounded-xl transition-all duration-200 ${
+                activeTab === "departments"
+                  ? "bg-gradient-to-b from-[#F01313]/20 to-[#F01313]/5 text-white border border-[#F01313]/40 shadow-[0_0_18px_rgba(240,19,19,0.35)] relative before:absolute before:-left-3 before:w-1 before:h-5 before:bg-[#FF3B30] before:rounded-r before:shadow-[0_0_10px_#F01313]"
+                  : "text-[#6B6B6B] hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <LayoutGrid className="w-5 h-5" />
+            </Button>
 
-    <!-- TAB 2: DEPARTMENTS -->
-    <div id="tab-departments" class="tab-content">
-      <div class="dept-grid">
-        <div class="dept-card">
-          <div class="dept-header">
-            <div class="dept-title">01. Отдел Пайки & СМД</div>
-            <span class="dept-badge">Нагрузка: 88%</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setActiveTab("profile")}
+              className={`w-12 h-12 rounded-xl transition-all duration-200 ${
+                activeTab === "profile"
+                  ? "bg-gradient-to-b from-[#F01313]/20 to-[#F01313]/5 text-white border border-[#F01313]/40 shadow-[0_0_18px_rgba(240,19,19,0.35)] relative before:absolute before:-left-3 before:w-1 before:h-5 before:bg-[#FF3B30] before:rounded-r before:shadow-[0_0_10px_#F01313]"
+                  : "text-[#6B6B6B] hover:text-white hover:bg-white/5"
+              }`}
+            >
+              <User className="w-5 h-5" />
+            </Button>
           </div>
-          <div class="dept-stats">
-            <div>Задач: <strong>14</strong></div>
-            <div>Инженеров: <strong>4</strong></div>
-            <div>Ср. время: <strong>2.5ч</strong></div>
-          </div>
-          <div class="task-list">
-            <div class="task-item">
-              <span class="task-name">Пайка BGA проц. i9 (MacBook Air)</span>
-              <span class="task-meta">#AV-2201 · Срочно</span>
-            </div>
-            <div class="task-item">
-              <span class="task-name">Восстановление цепи питания контроллера</span>
-              <span class="task-meta">#AV-2195 · В процессе</span>
-            </div>
-          </div>
-        </div>
+        </aside>
 
-        <div class="dept-card">
-          <div class="dept-header">
-            <div class="dept-title">02. Сборка & Механика</div>
-            <span class="dept-badge">Нагрузка: 45%</span>
-          </div>
-          <div class="dept-stats">
-            <div>Задач: <strong>6</strong></div>
-            <div>Инженеров: <strong>3</strong></div>
-            <div>Ср. время: <strong>1.0ч</strong></div>
-          </div>
-          <div class="task-list">
-            <div class="task-item">
-              <span class="task-name">Установка корпуса стойки ЦОД</span>
-              <span class="task-meta">#AV-2214 · Ожидание</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="dept-card">
-          <div class="dept-header">
-            <div class="dept-title">03. Диагностика & Софт</div>
-            <span class="dept-badge">Нагрузка: 60%</span>
-          </div>
-          <div class="dept-stats">
-            <div>Задач: <strong>9</strong></div>
-            <div>Инженеров: <strong>2</strong></div>
-            <div>Ср. время: <strong>0.8ч</strong></div>
-          </div>
-          <div class="task-list">
-            <div class="task-item">
-              <span class="task-name">Прошивка контроллера полёта / тест</span>
-              <span class="task-meta">#AV-2180 · В процессе</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="dept-card">
-          <div class="dept-header">
-            <div class="dept-title">04. Отдел Контроля Качества (ОТК)</div>
-            <span class="dept-badge">Нагрузка: 30%</span>
-          </div>
-          <div class="dept-stats">
-            <div>Задач: <strong>3</strong></div>
-            <div>Инженеров: <strong>2</strong></div>
-            <div>Ср. время: <strong>0.5ч</strong></div>
-          </div>
-          <div class="task-list">
-            <div class="task-item">
-              <span class="task-name">Финальное тестирование нагрузкой</span>
-              <span class="task-meta">#AV-2183 · Ready</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAB 3: PROFILE -->
-    <div id="tab-profile" class="tab-content">
-      <div class="profile-wrapper">
-        <div class="profile-card">
-          <div class="avatar-large">ВД</div>
-          <div class="profile-name">Виталий Дарда</div>
-          <div class="profile-role">Senior Hardware Tech / Lead</div>
+        {/* MAIN VIEWPORT */}
+        <main className="p-8 lg:p-10">
           
-          <div class="profile-info-list">
-            <div class="info-row"><span class="lbl">ID сотрудника:</span><span class="val">#TECH-009</span></div>
-            <div class="info-row"><span class="lbl">Отдел:</span><span class="val">Пайка & Электроника</span></div>
-            <div class="info-row"><span class="lbl">Смена:</span><span class="val">09:00 - 18:00</span></div>
-            <div class="info-row"><span class="lbl">Доступ:</span><span class="val" style="color:var(--red-bright)">Level 3 (Admin)</span></div>
-          </div>
-        </div>
+          {/* Top Bar Header */}
+          <header className="flex items-center justify-between mb-8">
+            <div>
+              <span className="block mb-1 text-[11px] font-mono tracking-[0.16em] uppercase text-[#FF3B30] drop-shadow-[0_0_10px_rgba(255,59,48,0.5)]">
+                Averon Tech · Control Deck
+              </span>
+              <h1 className="text-2xl font-bold tracking-tight">
+                {activeTab === "kanban" && "Order Workflow"}
+                {activeTab === "departments" && "Department Workload"}
+                {activeTab === "profile" && "Engineer Profile"}
+              </h1>
+            </div>
 
-        <div class="profile-main-content">
-          <div class="section-box">
-            <h2>Текущие задачи в работе</h2>
-            <div class="task-list">
-              <div class="task-item">
-                <div>
-                  <div class="task-name">Восстановление цепи питания платы (BGA)</div>
-                  <div style="font-size:11px; color:var(--grey-dim)">Заказ #AV-2201 · Высокий приоритет</div>
+            <div className="flex items-center gap-4">
+              <div className="relative w-64">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B6B6B]" />
+                <Input
+                  type="text"
+                  placeholder="Search orders, tags..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 bg-[#141414] border-[#232323] text-sm text-white focus:border-[#F01313] focus:ring-1 focus:ring-[#F01313] rounded-lg"
+                />
+              </div>
+
+              <Button className="bg-gradient-to-b from-[#E01010] to-[#B50D0D] hover:from-[#FF3B30] hover:to-[#E01010] text-white border border-red-500/50 shadow-[0_6px_20px_rgba(240,19,19,0.3)] transition-all">
+                <Plus className="w-4 h-4 mr-2" /> New Order
+              </Button>
+
+              <Avatar className="w-9 h-9 border border-[#F01313] shadow-[0_0_10px_rgba(240,19,19,0.4)] cursor-pointer" onClick={() => setActiveTab("profile")}>
+                <AvatarFallback className="bg-[#1A1A1A] text-white font-bold text-xs">VD</AvatarFallback>
+              </Avatar>
+            </div>
+          </header>
+
+          {/* TAB 1: KANBAN WORKFLOW */}
+          {activeTab === "kanban" && (
+            <div className="space-y-8">
+              {/* Metric Stats Strip */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card className="bg-[#141414] border-[#232323] text-white">
+                  <CardHeader className="p-4 pb-2">
+                    <CardDescription className="text-[11px] font-mono tracking-widest uppercase text-[#6B6B6B]">Active Tasks</CardDescription>
+                    <CardTitle className="text-2xl font-bold">128</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0 text-xs text-[#FF3B30]">▲ 12% from last week</CardContent>
+                </Card>
+
+                <Card className="bg-[#141414] border-[#232323] text-white">
+                  <CardHeader className="p-4 pb-2">
+                    <CardDescription className="text-[11px] font-mono tracking-widest uppercase text-[#6B6B6B]">In Progress</CardDescription>
+                    <CardTitle className="text-2xl font-bold">46</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0 text-xs text-[#A0A0A0]">Optimal Load</CardContent>
+                </Card>
+
+                <Card className="bg-[#141414] border-[#232323] text-white">
+                  <CardHeader className="p-4 pb-2">
+                    <CardDescription className="text-[11px] font-mono tracking-widest uppercase text-[#6B6B6B]">Completed Today</CardDescription>
+                    <CardTitle className="text-2xl font-bold">19</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0 text-xs text-[#FF3B30]">▲ +4 target reached</CardContent>
+                </Card>
+
+                <Card className="bg-[#141414] border-[#232323] text-white">
+                  <CardHeader className="p-4 pb-2">
+                    <CardDescription className="text-[11px] font-mono tracking-widest uppercase text-[#6B6B6B]">Monthly Volume</CardDescription>
+                    <CardTitle className="text-2xl font-bold">€ 48,200</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 pt-0 text-xs text-[#FF3B30]">▲ 8.3% margin</CardContent>
+                </Card>
+              </div>
+
+              {/* Kanban Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4 border-t border-[#232323]">
+                
+                {/* Column 1: New */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-[#A0A0A0]">
+                      <span className="w-2 h-2 rounded-full bg-[#6B6B6B]" /> New Orders
+                    </div>
+                    <Badge variant="outline" className="font-mono text-xs bg-[#141414] border-[#232323] text-[#6B6B6B]">02</Badge>
+                  </div>
+                  <Progress value={20} className="h-0.5 bg-[#232323]" />
+
+                  {INITIAL_ORDERS.filter(o => o.status === "new").map(order => (
+                    <Card key={order.id} className="bg-[#1A1A1A]/65 backdrop-blur-md border-[#2A2A2A] hover:border-[#F01313]/40 hover:shadow-[0_0_22px_rgba(240,19,19,0.16)] transition-all cursor-pointer text-white">
+                      <CardHeader className="p-4 pb-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-mono text-xs text-[#6B6B6B]">{order.id}</span>
+                          <Badge variant="outline" className="text-[10px] font-mono bg-white/5 border-[#2A2A2A] text-[#A0A0A0]">NEW</Badge>
+                        </div>
+                        <CardTitle className="text-sm font-semibold">{order.title}</CardTitle>
+                        <CardDescription className="text-xs text-[#A0A0A0]">{order.client}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-2 border-t border-[#232323] flex items-center justify-between">
+                        <span className="font-mono text-sm font-medium">{order.amount}</span>
+                        <Avatar className="w-6 h-6 border border-[#0D0D0D]">
+                          <AvatarFallback className="text-[9px] bg-[#232323] text-[#A0A0A0]">{order.tech}</AvatarFallback>
+                        </Avatar>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
-                <span class="tag progress">В работе</span>
-              </div>
-            </div>
-          </div>
 
-          <div class="section-box">
-            <h2>Показатели за текущий месяц (KPI)</h2>
-            <div class="stats" style="grid-template-columns: repeat(3, 1fr); margin-bottom:0;">
-              <div class="stat-card">
-                <div class="label">Завершено сборок</div>
-                <div class="value">42</div>
-              </div>
-              <div class="stat-card">
-                <div class="label">Качество / Без брака</div>
-                <div class="value" style="color:var(--red-bright)">99.2%</div>
-              </div>
-              <div class="stat-card">
-                <div class="label">Часов на смене</div>
-                <div class="value">164ч</div>
+                {/* Column 2: In Progress */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-[#A0A0A0]">
+                      <span className="w-2 h-2 rounded-full bg-[#FF3B30] shadow-[0_0_8px_rgba(255,59,48,0.8)]" /> In Production
+                    </div>
+                    <Badge variant="outline" className="font-mono text-xs bg-[#141414] border-[#232323] text-[#6B6B6B]">02</Badge>
+                  </div>
+                  <Progress value={60} className="h-0.5 bg-[#232323]" />
+
+                  {INITIAL_ORDERS.filter(o => o.status === "progress").map(order => (
+                    <Card key={order.id} className="bg-[#1A1A1A]/65 backdrop-blur-md border-[#2A2A2A] hover:border-[#F01313]/40 hover:shadow-[0_0_22px_rgba(240,19,19,0.16)] transition-all cursor-pointer text-white">
+                      <CardHeader className="p-4 pb-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-mono text-xs text-[#6B6B6B]">{order.id}</span>
+                          <Badge className="text-[10px] font-mono bg-gradient-to-b from-[#8F0D0D] to-[#5C0808] border border-[#FF3B30]/40 text-white">IN WORK</Badge>
+                        </div>
+                        <CardTitle className="text-sm font-semibold">{order.title}</CardTitle>
+                        <CardDescription className="text-xs text-[#A0A0A0]">{order.client}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-2 border-t border-[#232323] flex items-center justify-between">
+                        <span className="font-mono text-sm font-medium">{order.amount}</span>
+                        <div className="flex items-center gap-1 text-[11px] text-[#FF3B30]">
+                          <AlertCircle className="w-3 h-3" /> {order.due}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {/* Column 3: Ready */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-xs font-semibold tracking-wider uppercase text-[#A0A0A0]">
+                      <span className="w-2 h-2 rounded-full bg-[#FF6B60] shadow-[0_0_10px_rgba(255,107,96,0.9)]" /> QA Passed / Ready
+                    </div>
+                    <Badge variant="outline" className="font-mono text-xs bg-[#141414] border-[#232323] text-[#6B6B6B]">01</Badge>
+                  </div>
+                  <Progress value={100} className="h-0.5 bg-[#232323]" />
+
+                  {INITIAL_ORDERS.filter(o => o.status === "ready").map(order => (
+                    <Card key={order.id} className="bg-[#1A1A1A]/65 backdrop-blur-md border-[#2A2A2A] hover:border-[#F01313]/40 hover:shadow-[0_0_22px_rgba(240,19,19,0.16)] transition-all cursor-pointer text-white">
+                      <CardHeader className="p-4 pb-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-mono text-xs text-[#6B6B6B]">{order.id}</span>
+                          <Badge className="text-[10px] font-mono bg-gradient-to-b from-[#E01010] to-[#A80D0D] border border-[#FF5A50]/60 text-white shadow-[0_0_10px_rgba(255,59,48,0.4)]">READY</Badge>
+                        </div>
+                        <CardTitle className="text-sm font-semibold">{order.title}</CardTitle>
+                        <CardDescription className="text-xs text-[#A0A0A0]">{order.client}</CardDescription>
+                      </CardHeader>
+                      <CardContent className="p-4 pt-2 border-t border-[#232323] flex items-center justify-between">
+                        <span className="font-mono text-sm font-medium">{order.amount}</span>
+                        <div className="flex items-center gap-1 text-[11px] text-[#A0A0A0]">
+                          <CheckCircle2 className="w-3 h-3 text-[#FF3B30]" /> {order.due}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
               </div>
             </div>
-          </div>
-        </div>
+          )}
+
+          {/* TAB 2: DEPARTMENTS BREAKDOWN */}
+          {activeTab === "departments" && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {DEPARTMENTS.map((dept) => {
+                const DeptIcon = dept.icon;
+                return (
+                  <Card key={dept.id} className="bg-[#141414] border-[#2A2A2A] relative overflow-hidden text-white">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#F01313] to-transparent" />
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-base font-bold flex items-center gap-2">
+                          <DeptIcon className="w-4 h-4 text-[#FF3B30]" /> {dept.name}
+                        </CardTitle>
+                        <Badge className="font-mono text-xs bg-[#F01313]/15 text-[#FF3B30] border border-[#F01313]/30">
+                          Capacity: {dept.load}%
+                        </Badge>
+                      </div>
+                      <div className="flex gap-6 mt-3 text-xs text-[#A0A0A0]">
+                        <div>Active Tasks: <strong className="font-mono text-white">{dept.tasks.length}</strong></div>
+                        <div>Engineers: <strong className="font-mono text-white">{dept.techs}</strong></div>
+                        <div>Avg Cycle: <strong className="font-mono text-white">{dept.avgTime}</strong></div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="space-y-3">
+                      <Progress value={dept.load} className="h-1 bg-[#232323]" />
+                      <div className="pt-2 space-y-2">
+                        {dept.tasks.map((task) => (
+                          <div key={task.id} className="flex items-center justify-between p-3 rounded-lg bg-[#1A1A1A] border border-[#232323] text-xs">
+                            <span className="font-medium text-white">{task.name}</span>
+                            <span className="font-mono text-[#6B6B6B]">{task.id} · {task.priority}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+
+          {/* TAB 3: PERSONAL PROFILE */}
+          {activeTab === "profile" && (
+            <div className="grid grid-cols-1 lg:grid-cols-[320px_1fr] gap-6">
+              
+              {/* Profile Sidebar Info */}
+              <Card className="bg-[#141414] border-[#2A2A2A] p-6 text-center text-white flex flex-col items-center">
+                <Avatar className="w-24 h-24 mb-4 border-2 border-[#FF3B30] shadow-[0_0_25px_rgba(240,19,19,0.4)]">
+                  <AvatarFallback className="bg-[#1A1A1A] text-white text-2xl font-extrabold">VD</AvatarFallback>
+                </Avatar>
+
+                <h2 className="text-lg font-bold">Vitalii Darda</h2>
+                <span className="font-mono text-xs text-[#FF3B30] uppercase tracking-wider mb-6 block">
+                  Senior Electronics Tech / Lead
+                </span>
+
+                <div className="w-full text-left space-y-3 border-t border-[#232323] pt-4 text-xs">
+                  <div className="flex justify-between"><span className="text-[#6B6B6B]">Engineer ID:</span><span className="font-mono text-white">#TECH-009</span></div>
+                  <div className="flex justify-between"><span className="text-[#6B6B6B]">Primary Spec:</span><span className="font-mono text-white">SMD & BGA Soldering</span></div>
+                  <div className="flex justify-between"><span className="text-[#6B6B6B]">Shift Schedule:</span><span className="font-mono text-white">09:00 - 18:00</span></div>
+                  <div className="flex justify-between"><span className="text-[#6B6B6B]">Clearance:</span><span className="font-mono text-[#FF3B30]">Level 3 (Admin)</span></div>
+                </div>
+              </Card>
+
+              {/* Main Profile Performance Stats */}
+              <div className="space-y-6">
+                <Card className="bg-[#141414] border-[#2A2A2A] text-white">
+                  <CardHeader>
+                    <CardTitle className="text-sm font-bold flex items-center gap-2">
+                      <span className="w-1 h-4 bg-[#FF3B30] rounded-sm shadow-[0_0_8px_#F01313]" /> Assigned Work Orders
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-[#1A1A1A] border border-[#232323]">
+                      <div>
+                        <div className="text-sm font-medium">BGA Soldering i9 CPU (MacBook Air)</div>
+                        <div className="text-xs text-[#6B6B6B]">Order #AV-2201 · High Priority</div>
+                      </div>
+                      <Badge className="font-mono text-xs bg-[#8F0D0D] border border-[#FF3B30]/40 text-white">IN PROGRESS</Badge>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-[#141414] border-[#2A2A2A] text-white">
+                  <CardHeader>
+                    <CardTitle className="text-sm font-bold flex items-center gap-2">
+                      <span className="w-1 h-4 bg-[#FF3B30] rounded-sm shadow-[0_0_8px_#F01313]" /> Monthly Performance (KPI)
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="grid grid-cols-3 gap-4">
+                    <div className="p-4 rounded-lg bg-[#1A1A1A] border border-[#232323]">
+                      <div className="text-[10px] font-mono uppercase text-[#6B6B6B] mb-1">Repairs Completed</div>
+                      <div className="text-2xl font-bold font-mono">42</div>
+                    </div>
+                    <div className="p-4 rounded-lg bg-[#1A1A1A] border border-[#232323]">
+                      <div className="text-[10px] font-mono uppercase text-[#6B6B6B] mb-1">QA Approval Rate</div>
+                      <div className="text-2xl font-bold font-mono text-[#FF3B30]">99.2%</div>
+                    </div>
+                    <div className="p-4 rounded-lg bg-[#1A1A1A] border border-[#232323]">
+                      <div className="text-[10px] font-mono uppercase text-[#6B6B6B] mb-1">Total On-Shift</div>
+                      <div className="text-2xl font-bold font-mono">164h</div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+            </div>
+          )}
+
+        </main>
       </div>
     </div>
-
-  </main>
-</div>
-
-<script>
-function switchTab(tabName, el) {
-  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-  
-  document.getElementById('tab-' + tabName).classList.add('active');
-  if(el) el.classList.add('active');
-
-  const titles = {
-    'kanban': 'Заказы',
-    'departments': 'Разбивка по отделам',
-    'profile': 'Личный профиль'
-  };
-  document.getElementById('page-title').innerText = titles[tabName] || 'Averon CRM';
+  );
 }
-</script>
-
-</body>
-</html>
