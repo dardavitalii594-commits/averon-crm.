@@ -31,12 +31,10 @@ body{
   min-height:100vh;
   position:relative;
   overflow-x:hidden;
-  padding-bottom: 70px; /* Отступ под мобильное меню снизу */
+  padding-bottom: 75px;
 }
 
-@media(min-width: 769px) {
-  body { padding-bottom: 0; }
-}
+@media(min-width: 769px) { body { padding-bottom: 0; } }
 
 /* НЕОНОВЫЙ ФОН */
 body::before{
@@ -45,193 +43,142 @@ body::before{
   background: radial-gradient(circle, rgba(255,26,26,0.18) 0%, rgba(255,26,26,0) 70%);
   pointer-events:none; z-index:0; filter: blur(40px);
 }
-body::after{
-  content:''; position:fixed; bottom:-150px; right:-100px;
-  width:450px; height:450px;
-  background: radial-gradient(circle, rgba(255,26,26,0.14) 0%, rgba(255,26,26,0) 70%);
-  pointer-events:none; z-index:0; filter: blur(50px);
-}
 
-.app{
-  display:grid;
-  grid-template-columns: 1fr;
-  min-height:100vh;
-  position:relative;
-  z-index:1;
-}
+.app{ display:grid; grid-template-columns: 1fr; min-height:100vh; position:relative; z-index:1; }
+@media(min-width: 769px) { .app { grid-template-columns: 84px 1fr; } }
 
-@media(min-width: 769px) {
-  .app { grid-template-columns: 84px 1fr; }
-}
-
-/* НАВИГАЦИЯ: Моб версия (Bottom Bar) / Десктоп (Sidebar) */
+/* НАВИГАЦИЯ */
 .sidebar{
-  position: fixed;
-  bottom: 0; left: 0; width: 100%; height: 65px;
-  background: rgba(10, 10, 10, 0.9);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  position: fixed; bottom: 0; left: 0; width: 100%; height: 65px;
+  background: rgba(10, 10, 10, 0.92);
+  backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
   border-top: 1px solid var(--line);
   display: flex; flex-direction: row; align-items: center; justify-content: space-around;
-  padding: 0 16px;
-  z-index: 100;
+  padding: 0 16px; z-index: 100;
 }
 
 @media(min-width: 769px) {
   .sidebar{
-    position: relative;
-    top: 0; width: 84px; height: auto; min-height: 100vh;
+    position: relative; top: 0; width: 84px; height: auto; min-height: 100vh;
     border-top: none; border-right: 1px solid var(--line);
-    flex-direction: column; justify-content: flex-start;
-    padding: 24px 0;
+    flex-direction: column; justify-content: flex-start; padding: 24px 0;
   }
 }
 
 .logo-mark{
-  display: none;
-  width:40px; height:40px;
-  border:2px solid var(--red-neon); border-radius:10px;
-  align-items:center; justify-content:center;
-  font-family:'Roboto Mono', monospace; font-weight:700; font-size:15px; color:#fff;
-  background: rgba(255, 26, 26, 0.1);
-  box-shadow: 0 0 15px var(--red-glow); text-shadow: 0 0 8px var(--red-neon);
-  margin-bottom:44px;
+  display: none; width:40px; height:40px; border:2px solid var(--red-neon); border-radius:10px;
+  align-items:center; justify-content:center; font-family:'Roboto Mono', monospace; font-weight:700;
+  font-size:15px; color:#fff; background: rgba(255, 26, 26, 0.1);
+  box-shadow: 0 0 15px var(--red-glow); text-shadow: 0 0 8px var(--red-neon); margin-bottom:44px;
 }
-
-@media(min-width: 769px) {
-  .logo-mark { display: flex; }
-}
+@media(min-width: 769px) { .logo-mark { display: flex; } }
 
 .nav-icons{ display:flex; flex-direction:row; gap:20px; width: 100%; justify-content: space-around; }
-
-@media(min-width: 769px) {
-  .nav-icons{ flex-direction:column; gap:12px; width:auto; justify-content:flex-start; flex:1; }
-}
+@media(min-width: 769px) { .nav-icons{ flex-direction:column; gap:12px; width:auto; justify-content:flex-start; flex:1; } }
 
 .nav-item{
   width:44px; height:44px; border-radius:12px;
   display:flex; align-items:center; justify-content:center;
-  color: var(--grey-dim); cursor:pointer; position:relative;
-  transition: all .25s ease;
+  color: var(--grey-dim); cursor:pointer; position:relative; transition: all .25s ease;
 }
 .nav-item svg{ width:22px; height:22px; stroke:currentColor; fill:none; stroke-width:1.6; }
-
 .nav-item.active{
-  color:#fff;
-  background: linear-gradient(180deg, rgba(255,26,26,0.25), rgba(255,26,26,0.05));
-  border: 1px solid var(--red-neon);
-  box-shadow: 0 0 15px var(--red-glow);
+  color:#fff; background: linear-gradient(180deg, rgba(255,26,26,0.25), rgba(255,26,26,0.05));
+  border: 1px solid var(--red-neon); box-shadow: 0 0 15px var(--red-glow);
 }
 .nav-item.active svg{ stroke: #fff; filter: drop-shadow(0 0 6px var(--red-neon)); }
 
-/* MAIN CONTENT AREA */
-.main{ padding: 20px 16px 30px; }
+/* MAIN AREA */
+.main{ padding: 16px 14px 30px; }
+@media(min-width: 769px) { .main{ padding: 28px 40px 40px; } }
 
-@media(min-width: 769px) {
-  .main{ padding: 28px 40px 40px; }
-}
-
-/* TOPBAR */
-.topbar{
-  display:flex; flex-direction: column; gap: 16px;
-  margin-bottom:24px;
-}
-
-@media(min-width: 769px) {
-  .topbar { flex-direction: row; align-items:center; justify-content:space-between; margin-bottom:32px; }
-}
+.topbar{ display:flex; flex-direction: column; gap: 14px; margin-bottom:20px; }
+@media(min-width: 769px) { .topbar { flex-direction: row; align-items:center; justify-content:space-between; margin-bottom:32px; } }
 
 .title-block h1{ font-size:20px; font-weight:800; letter-spacing:-0.01em; }
-
-@media(min-width: 769px) {
-  .title-block h1 { font-size:24px; }
-}
-
 .title-block .eyebrow{
   font-family:'Roboto Mono', monospace; font-size:10px; letter-spacing:0.15em;
   text-transform:uppercase; color: var(--red-neon); margin-bottom:4px; display:block;
   text-shadow: 0 0 10px var(--red-glow-strong);
 }
 
-.top-actions{ display:flex; align-items:center; gap:10px; width: 100%; }
-
-@media(min-width: 769px) {
-  .top-actions { width: auto; gap:14px; }
-}
+/* ФИКС ОБРЕЗКИ И ВМЕЩЕНИЯ ВЕРХНЕЙ ПАНЕЛИ */
+.top-actions{ display:flex; align-items:center; gap:8px; width: 100%; overflow-x: auto; }
+@media(min-width: 769px) { .top-actions { width: auto; gap:14px; overflow-x: visible; } }
 
 .search{
-  display:flex; align-items:center; gap:8px;
-  background: rgba(20, 20, 20, 0.6); backdrop-filter: blur(12px);
-  border:1px solid var(--line); border-radius:12px; padding:10px 14px;
-  color:var(--grey-dim); font-size:13px; flex: 1;
+  display:flex; align-items:center; gap:8px; background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(12px); border:1px solid var(--line); border-radius:12px;
+  padding:9px 12px; color:var(--grey-dim); font-size:13px; flex: 1; min-width: 140px;
 }
-
-@media(min-width: 769px) {
-  .search { width: 240px; flex: none; }
-}
-
-.search svg{ width:16px; height:16px; stroke:var(--grey-dim); fill:none; stroke-width:1.6; }
+.search svg{ width:15px; height:15px; stroke:var(--grey-dim); fill:none; stroke-width:1.6; }
 
 .btn-primary{
   font-family:'Inter'; font-weight:700; font-size:12px; color:#fff;
   background: linear-gradient(180deg, #FF2222, #B50000);
   border:1px solid rgba(255,100,100,0.6); border-radius:12px;
-  padding:10px 14px; cursor:pointer; white-space: nowrap;
+  padding:9px 12px; cursor:pointer; white-space: nowrap; flex-shrink: 0;
   box-shadow: 0 0 12px var(--red-glow);
 }
 
 .avatar{
-  width:38px; height:38px; border-radius:50%; flex-shrink: 0;
-  background: var(--card); border:1.5px solid var(--red-neon);
+  width:36px; height:36px; border-radius:50%; flex-shrink: 0;
+  background-size: cover; background-position: center;
+  background-color: var(--card); border:1.5px solid var(--red-neon);
   display:flex; align-items:center; justify-content:center;
   font-size:12px; font-weight:700; color:#fff;
-  box-shadow: 0 0 12px var(--red-glow); cursor:pointer;
+  box-shadow: 0 0 12px var(--red-glow); cursor:pointer; overflow: hidden;
 }
 
 /* TAB PANELS */
 .tab-content{ display:none; }
 .tab-content.active{ display:block; }
 
-/* КАРТОЧКИ И МЕТРИКИ */
+/* 100% ТОЧНЫЙ СВАЙП БЛОКОВ (1 БЛОК = 1 ЭКРАН) */
+.swipe-container {
+  display: flex; gap: 12px; overflow-x: auto;
+  scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+  padding-bottom: 8px; margin: 0 -14px; padding-left: 14px; padding-right: 14px;
+}
+@media(min-width: 769px) {
+  .swipe-container { display: grid; margin: 0; padding: 0; overflow-x: visible; }
+}
+
+.swipe-card {
+  flex: 0 0 100%; width: 100%; scroll-snap-align: center; scroll-snap-stop: always;
+}
+
 .stat-card, .dept-card, .section-box, .profile-card{
   background: var(--panel); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--card-border); border-radius: 16px;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
 }
 
-.stats{ display:grid; grid-template-columns: repeat(2, 1fr); gap:10px; margin-bottom:24px; }
+.stats-grid { display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; margin-bottom: 20px; }
+@media(min-width: 769px) { .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; } }
 
-@media(min-width: 769px) {
-  .stats { grid-template-columns: repeat(4, 1fr); gap:16px; margin-bottom:34px; }
-}
+.stat-card{ padding:16px; flex: 0 0 calc(50% - 6px); scroll-snap-align: start; }
+@media(min-width: 769px) { .stat-card { flex: none; } }
 
-.stat-card{ padding:14px; }
 .stat-card .label{ font-size:10px; letter-spacing:0.05em; text-transform:uppercase; color:var(--grey-dim); margin-bottom:6px; font-family:'Roboto Mono', monospace; }
-.stat-card .value{ font-size:22px; font-weight:800; }
-
-@media(min-width: 769px) {
-  .stat-card .value { font-size: 28px; }
-}
-
+.stat-card .value{ font-size:24px; font-weight:800; }
 .stat-card .delta.up{ color: var(--red-neon); text-shadow:0 0 8px var(--red-glow); font-size:11px; margin-top:4px; }
 
-/* МОБИЛЬНЫЙ КАНБАН (Горизонтальный скролл) */
-.kanban{
-  display: flex; gap: 14px; overflow-x: auto; padding-bottom: 12px;
+/* КАНБАН СВАЙП ПО КОЛОНКАМ */
+.kanban-swipe{
+  display: flex; gap: 14px; overflow-x: auto;
   scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
 }
-
 @media(min-width: 769px) {
-  .kanban{ display: grid; grid-template-columns: repeat(3, 1fr); gap:0; overflow-x: visible; border-top:1px solid var(--line); }
+  .kanban-swipe{ display: grid; grid-template-columns: repeat(3, 1fr); gap:0; overflow-x: visible; border-top:1px solid var(--line); }
 }
 
 .column{
-  flex: 0 0 85vw; max-width: 320px; scroll-snap-align: start;
-  background: rgba(15, 15, 15, 0.5); border: 1px solid var(--line); border-radius: 16px; padding: 16px;
+  flex: 0 0 100%; width: 100%; scroll-snap-align: center; scroll-snap-stop: always;
+  background: rgba(15, 15, 15, 0.6); border: 1px solid var(--line); border-radius: 16px; padding: 16px;
 }
-
 @media(min-width: 769px) {
-  .column{ flex: none; max-width: none; background: transparent; border: none; border-radius: 0; border-right:1px solid var(--line); padding: 22px 18px; }
+  .column{ flex: none; background: transparent; border: none; border-radius: 0; border-right:1px solid var(--line); padding: 22px 18px; }
 }
 
 .column-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
@@ -246,7 +193,6 @@ body::after{
 .progress-track .fill{ height:100%; background: var(--red-neon); box-shadow:0 0 12px var(--red-neon); }
 
 .cards{ display:flex; flex-direction:column; gap:12px; }
-
 .order-card{
   background: rgba(26, 26, 26, 0.7); backdrop-filter: blur(12px);
   border:1px solid rgba(255, 255, 255, 0.08); border-radius:14px; padding:14px; cursor:pointer;
@@ -264,43 +210,39 @@ body::after{
 .meta-row{ display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--line); padding-top:10px; }
 .amount{ font-family:'Roboto Mono', monospace; font-size:12.5px; font-weight:600; color:#fff; }
 
-/* DEPARTMENTS (ОТДЕЛЫ) */
-.dept-grid{ display:grid; grid-template-columns: 1fr; gap:14px; }
-
-@media(min-width: 769px) {
-  .dept-grid { grid-template-columns: repeat(2, 1fr); gap:20px; }
-}
-
-.dept-card{ padding:18px; position:relative; overflow:hidden; }
-.dept-header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-.dept-title{ font-size:14.5px; font-weight:700; }
-.dept-badge{ font-family:'Roboto Mono', monospace; font-size:10px; padding:3px 8px; border-radius:20px; background:rgba(255,26,26,0.15); color:var(--red-neon); border:1px solid var(--red-neon); }
-.dept-stats{ display:flex; gap:16px; margin-bottom:14px; font-size:12px; color:var(--grey); }
-.dept-stats strong{ color:#fff; font-family:'Roboto Mono', monospace; }
-.task-list{ display:flex; flex-direction:column; gap:8px; }
-.task-item{ background: rgba(30, 30, 30, 0.5); border:1px solid var(--line); border-radius:10px; padding:10px 12px; display:flex; flex-direction:column; gap:4px; font-size:12.5px; }
-
-@media(min-width: 769px) {
-  .task-item { flex-direction: row; align-items: center; justify-content: space-between; }
-}
-
-.task-item .task-meta{ font-family:'Roboto Mono', monospace; font-size:10px; color:var(--grey-dim); }
-
-/* PROFILE (ПРОФИЛЬ) */
+/* ПРОФИЛИ И РЕГИСТРАЦИЯ */
 .profile-wrapper{ display:grid; grid-template-columns: 1fr; gap:16px; }
+@media(min-width: 769px) { .profile-wrapper { grid-template-columns: 320px 1fr; gap:24px; } }
 
-@media(min-width: 769px) {
-  .profile-wrapper { grid-template-columns: 320px 1fr; gap:24px; }
-}
-
-.profile-card{ padding:20px; display:flex; flex-direction:column; align-items:center; text-align:center; }
+.profile-card{ padding:20px; display:flex; flex-direction:column; align-items:center; text-align:center; position:relative;}
+.avatar-upload-wrap { position: relative; cursor: pointer; margin-bottom: 14px; }
 .avatar-large{
-  width:74px; height:74px; border-radius:50%; background: var(--card); border:2px solid var(--red-neon);
-  display:flex; align-items:center; justify-content:center; font-size:24px; font-weight:800; color:#fff;
-  box-shadow: 0 0 25px var(--red-glow-strong); margin-bottom:14px;
+  width:80px; height:80px; border-radius:50%; background-size: cover; background-position: center;
+  background-color: var(--card); border:2px solid var(--red-neon);
+  display:flex; align-items:center; justify-content:center; font-size:26px; font-weight:800; color:#fff;
+  box-shadow: 0 0 25px var(--red-glow-strong); overflow: hidden;
 }
+.avatar-upload-wrap:hover .avatar-large::after {
+  content: '📷'; position: absolute; inset:0; background: rgba(0,0,0,0.6);
+  display:flex; align-items:center; justify-content:center; font-size:20px;
+}
+
 .profile-name{ font-size:18px; font-weight:800; margin-bottom:2px; }
 .profile-role{ font-family:'Roboto Mono', monospace; font-size:11px; color:var(--red-neon); margin-bottom:16px; text-transform:uppercase; letter-spacing:0.05em; }
+
+.select-profile-box {
+  width: 100%; margin-bottom: 16px; background: rgba(30,30,30,0.8);
+  border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px;
+  color: #fff; font-size: 12px; font-family: 'Inter';
+}
+
+.btn-secondary {
+  width: 100%; padding: 10px; border-radius: 10px; border: 1px solid var(--line);
+  background: rgba(255,255,255,0.05); color: #fff; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all .2s; margin-top: 10px;
+}
+.btn-secondary:hover { border-color: var(--red-neon); box-shadow: 0 0 10px var(--red-glow); }
+
 .profile-info-list{ width:100%; text-align:left; display:flex; flex-direction:column; gap:10px; border-top:1px solid var(--line); padding-top:14px; }
 .info-row{ display:flex; justify-content:space-between; font-size:12px; }
 .info-row .lbl{ color:var(--grey-dim); }
@@ -310,23 +252,42 @@ body::after{
 .section-box{ padding:18px; }
 .section-box h2{ font-size:14px; font-weight:700; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
 .section-box h2::before{ content:''; width:3px; height:14px; background:var(--red-neon); border-radius:2px; box-shadow:0 0 10px var(--red-neon); }
+
+/* МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(12px);
+  display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-card {
+  background: #121212; border: 1px solid var(--red-neon); border-radius: 20px;
+  padding: 24px; width: 100%; max-width: 360px; box-shadow: 0 0 30px var(--red-glow);
+}
+.modal-card h3 { font-size: 18px; font-weight: 800; margin-bottom: 16px; color: #fff; }
+.form-group { margin-bottom: 12px; text-align: left; }
+.form-group label { display: block; font-size: 11px; font-family: 'Roboto Mono'; color: var(--grey-dim); margin-bottom: 4px; }
+.form-group input, .form-group select {
+  width: 100%; background: #1A1A1A; border: 1px solid var(--line); border-radius: 10px;
+  padding: 10px; color: #fff; font-size: 13px; font-family: 'Inter';
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--red-neon); outline: none; }
 </style>
 </head>
 <body>
 
 <div class="app">
 
-  <!-- NAVIGATION BAR (Mobile Bottom / Desktop Left) -->
+  <!-- NAVIGATION BAR -->
   <aside class="sidebar">
     <div class="logo-mark">AT</div>
     <nav class="nav-icons">
-      <div class="nav-item active" onclick="switchTab('kanban', this)" title="Канбан Заказов">
+      <div class="nav-item active" onclick="switchTab('kanban', this)" title="Заказы">
         <svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
       </div>
-      <div class="nav-item" onclick="switchTab('departments', this)" title="Отделы и Таски">
+      <div class="nav-item" onclick="switchTab('departments', this)" title="Отделы">
         <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
       </div>
-      <div class="nav-item" onclick="switchTab('profile', this)" title="Личный Профиль">
+      <div class="nav-item" onclick="switchTab('profile', this)" title="Профиль">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 21c0-4 3.2-6.5 7-6.5s7 2.5 7 6.5"/></svg>
       </div>
     </nav>
@@ -345,14 +306,16 @@ body::after{
           <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
           Поиск...
         </div>
-        <button class="btn-primary">+ Заказ</button>
-        <div class="avatar" onclick="switchTab('profile', document.querySelectorAll('.nav-item')[2])">ВД</div>
+        <button class="btn-primary" id="add-order-btn">+ Заказ</button>
+        <div class="avatar" id="top-avatar" onclick="switchTab('profile', document.querySelectorAll('.nav-item')[2])">ВД</div>
       </div>
     </div>
 
     <!-- TAB 1: KANBAN -->
     <div id="tab-kanban" class="tab-content active">
-      <div class="stats">
+      
+      <!-- Свайп карточек метрик -->
+      <div class="stats-grid">
         <div class="stat-card">
           <div class="label">Активные</div>
           <div class="value">128</div>
@@ -375,8 +338,8 @@ body::after{
         </div>
       </div>
 
-      <!-- Лента Канбан-колонок с горизонтальным скроллом на смартфонах -->
-      <div class="kanban">
+      <!-- Свайп колонок (ровно 100% экрана) -->
+      <div class="kanban-swipe">
         <div class="column">
           <div class="column-head">
             <div class="col-title"><span class="dot new"></span>Новый</div>
@@ -429,55 +392,56 @@ body::after{
 
     <!-- TAB 2: DEPARTMENTS -->
     <div id="tab-departments" class="tab-content">
-      <div class="dept-grid">
-        <div class="dept-card">
+      <div class="swipe-container">
+        <div class="swipe-card dept-card">
           <div class="dept-header">
             <div class="dept-title">01. Пайка & СМД</div>
             <span class="dept-badge">88%</span>
           </div>
-          <div class="dept-stats">
-            <div>Задач: <strong>14</strong></div>
-            <div>Инженеров: <strong>4</strong></div>
-          </div>
+          <div class="dept-stats"><div>Задач: <strong>14</strong></div><div>Инженеров: <strong>4</strong></div></div>
           <div class="task-list">
-            <div class="task-item">
-              <span>Пайка BGA проц. i9 (MacBook)</span>
-              <span class="task-meta">#AV-2201 · Срочно</span>
-            </div>
+            <div class="task-item"><span>Пайка BGA проц. i9 (MacBook)</span><span class="task-meta">#AV-2201 · Срочно</span></div>
           </div>
         </div>
 
-        <div class="dept-card">
+        <div class="swipe-card dept-card">
           <div class="dept-header">
             <div class="dept-title">02. Сборка & Механика</div>
             <span class="dept-badge">45%</span>
           </div>
-          <div class="dept-stats">
-            <div>Задач: <strong>6</strong></div>
-            <div>Инженеров: <strong>3</strong></div>
-          </div>
+          <div class="dept-stats"><div>Задач: <strong>6</strong></div><div>Инженеров: <strong>3</strong></div></div>
           <div class="task-list">
-            <div class="task-item">
-              <span>Установка корпуса стойки ЦОД</span>
-              <span class="task-meta">#AV-2214 · Ожидание</span>
-            </div>
+            <div class="task-item"><span>Установка корпуса стойки ЦОД</span><span class="task-meta">#AV-2214 · Ожидание</span></div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- TAB 3: PROFILE -->
+    <!-- TAB 3: PROFILE & MULTI-USER MANAGEMENT -->
     <div id="tab-profile" class="tab-content">
       <div class="profile-wrapper">
         <div class="profile-card">
-          <div class="avatar-large">ВД</div>
-          <div class="profile-name">Виталий Дарда</div>
-          <div class="profile-role">Senior Hardware Tech / Lead</div>
           
+          <!-- Аватарка с загрузкой фото -->
+          <div class="avatar-upload-wrap" onclick="document.getElementById('avatar-input').click()">
+            <div class="avatar-large" id="profile-avatar-display">ВД</div>
+            <input type="file" id="avatar-input" accept="image/*" style="display:none;" onchange="uploadAvatar(event)">
+          </div>
+
+          <div class="profile-name" id="p-name">Виталий Дарда</div>
+          <div class="profile-role" id="p-role">Senior Hardware Tech / Lead</div>
+
+          <!-- Выбор текущего аккаунта -->
+          <select class="select-profile-box" id="profile-selector" onchange="switchUser(this.value)">
+            <!-- Динамически заполнится из JS -->
+          </select>
+
+          <button class="btn-secondary" onclick="openRegisterModal()">+ Зарегистрировать сотрудника</button>
+
           <div class="profile-info-list">
-            <div class="info-row"><span class="lbl">ID:</span><span class="val">#TECH-009</span></div>
-            <div class="info-row"><span class="lbl">Специализация:</span><span class="val">Пайка BGA & SMD</span></div>
-            <div class="info-row"><span class="lbl">Доступ:</span><span class="val" style="color:var(--red-neon)">Level 3 (Admin)</span></div>
+            <div class="info-row"><span class="lbl">ID сотрудника:</span><span class="val" id="p-id">#TECH-009</span></div>
+            <div class="info-row"><span class="lbl">Отдел:</span><span class="val" id="p-dept">Пайка & Электроника</span></div>
+            <div class="info-row"><span class="lbl">Уровень доступа:</span><span class="val" id="p-level" style="color:var(--red-neon)">Level 3 (Admin)</span></div>
           </div>
         </div>
 
@@ -485,18 +449,9 @@ body::after{
           <div class="section-box">
             <h2>Показатели за месяц (KPI)</h2>
             <div class="stats" style="grid-template-columns: repeat(3, 1fr); margin-bottom:0;">
-              <div class="stat-card" style="padding:12px;">
-                <div class="label">Сборок</div>
-                <div class="value">42</div>
-              </div>
-              <div class="stat-card" style="padding:12px;">
-                <div class="label">ОТК</div>
-                <div class="value" style="color:var(--red-neon)">99%</div>
-              </div>
-              <div class="stat-card" style="padding:12px;">
-                <div class="label">Часов</div>
-                <div class="value">164ч</div>
-              </div>
+              <div class="stat-card" style="padding:12px;"><div class="label">Сборок</div><div class="value">42</div></div>
+              <div class="stat-card" style="padding:12px;"><div class="label">ОТК</div><div class="value" style="color:var(--red-neon)">99%</div></div>
+              <div class="stat-card" style="padding:12px;"><div class="label">Часов</div><div class="value">164ч</div></div>
             </div>
           </div>
         </div>
@@ -506,7 +461,163 @@ body::after{
   </main>
 </div>
 
+<!-- МОДАЛЬНОЕ ОКНО РЕГИСТРАЦИИ СОТРУДНИКА -->
+<div class="modal-overlay" id="register-modal">
+  <div class="modal-card">
+    <h3>Новый сотрудник</h3>
+    <form onsubmit="handleRegister(event)">
+      <div class="form-group">
+        <label>ФИО / ИМЯ</label>
+        <input type="text" id="reg-name" required placeholder="Иван Иванов">
+      </div>
+      <div class="form-group">
+        <label>ДОЛЖНОСТЬ / РОЛЬ</label>
+        <input type="text" id="reg-role" required placeholder="Инженер-техник">
+      </div>
+      <div class="form-group">
+        <label>ОТДЕЛ</label>
+        <select id="reg-dept">
+          <option>Пайка & Электроника</option>
+          <option>Сборка & Механика</option>
+          <option>Диагностика & Софт</option>
+          <option>Контроль Качества (ОТК)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>УРОВЕНЬ ДОСТУПА</label>
+        <select id="reg-level">
+          <option value="Level 1 (Tech)">Level 1 (Техник - только просмотр)</option>
+          <option value="Level 2 (Lead)">Level 2 (Лид - редактирование)</option>
+          <option value="Level 3 (Admin)">Level 3 (Админ - полный доступ)</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-primary" style="width:100%; margin-top:10px;">Сохранить сотрудника</button>
+      <button type="button" class="btn-secondary" onclick="closeRegisterModal()">Отмена</button>
+    </form>
+  </div>
+</div>
+
 <script>
+// ДЕФОЛТНЫЙ СПИСОК ПРОФИЛЕЙ
+const DEFAULT_USERS = [
+  {
+    id: 'TECH-009',
+    name: 'Виталий Дарда',
+    role: 'Senior Hardware Tech / Lead',
+    dept: 'Пайка & Электроника',
+    level: 'Level 3 (Admin)',
+    avatar: ''
+  },
+  {
+    id: 'TECH-014',
+    name: 'Алексей Сергиенко',
+    role: 'Assembly Specialist',
+    dept: 'Сборка & Механика',
+    level: 'Level 1 (Tech)',
+    avatar: ''
+  }
+];
+
+// ИНИЦИАЛИЗАЦИЯ ИЗ LOCALSTORAGE
+let users = JSON.parse(localStorage.getItem('averon_users')) || DEFAULT_USERS;
+let activeUserId = localStorage.getItem('averon_active_user') || users[0].id;
+
+function saveState() {
+  localStorage.setItem('averon_users', JSON.stringify(users));
+  localStorage.setItem('averon_active_user', activeUserId);
+}
+
+function renderProfiles() {
+  const select = document.getElementById('profile-selector');
+  select.innerHTML = '';
+  users.forEach(u => {
+    const opt = document.createElement('option');
+    opt.value = u.id;
+    opt.innerText = u.name + ' (' + u.level + ')';
+    if(u.id === activeUserId) opt.selected = true;
+    select.appendChild(opt);
+  });
+
+  const currentUser = users.find(u => u.id === activeUserId) || users[0];
+  document.getElementById('p-name').innerText = currentUser.name;
+  document.getElementById('p-role').innerText = currentUser.role;
+  document.getElementById('p-id').innerText = '#' + currentUser.id;
+  document.getElementById('p-dept').innerText = currentUser.dept;
+  document.getElementById('p-level').innerText = currentUser.level;
+
+  // Отрисовка аватарок
+  const initials = currentUser.name.split(' ').map(n=>n[0]).join('');
+  const disp = document.getElementById('profile-avatar-display');
+  const topNavDisp = document.getElementById('top-avatar');
+
+  if(currentUser.avatar) {
+    disp.style.backgroundImage = 'url(' + currentUser.avatar + ')';
+    disp.innerText = '';
+    topNavDisp.style.backgroundImage = 'url(' + currentUser.avatar + ')';
+    topNavDisp.innerText = '';
+  } else {
+    disp.style.backgroundImage = 'none';
+    disp.innerText = initials;
+    topNavDisp.style.backgroundImage = 'none';
+    topNavDisp.innerText = initials;
+  }
+
+  // Ограничение доступа в зависимости от Level
+  const addBtn = document.getElementById('add-order-btn');
+  if(currentUser.level.includes('Level 1')) {
+    if(addBtn) addBtn.style.display = 'none';
+  } else {
+    if(addBtn) addBtn.style.display = 'block';
+  }
+}
+
+function switchUser(id) {
+  activeUserId = id;
+  saveState();
+  renderProfiles();
+}
+
+function uploadAvatar(event) {
+  const file = event.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const base64 = e.target.result;
+    const currentUser = users.find(u => u.id === activeUserId);
+    if(currentUser) {
+      currentUser.avatar = base64;
+      saveState();
+      renderProfiles();
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+function openRegisterModal() {
+  document.getElementById('register-modal').classList.add('active');
+}
+function closeRegisterModal() {
+  document.getElementById('register-modal').classList.remove('active');
+}
+
+function handleRegister(e) {
+  e.preventDefault();
+  const newU = {
+    id: 'TECH-0' + Math.floor(10 + Math.random() * 90),
+    name: document.getElementById('reg-name').value,
+    role: document.getElementById('reg-role').value,
+    dept: document.getElementById('reg-dept').value,
+    level: document.getElementById('reg-level').value,
+    avatar: ''
+  };
+  users.push(newU);
+  activeUserId = newU.id;
+  saveState();
+  renderProfiles();
+  closeRegisterModal();
+}
+
 function switchTab(tabName, el) {
   document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
@@ -521,6 +632,9 @@ function switchTab(tabName, el) {
   };
   document.getElementById('page-title').innerText = titles[tabName] || 'Averon CRM';
 }
+
+// Запуск при загрузке
+renderProfiles();
 </script>
 
 </body>
